@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Client Portal - Payment History</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    h2 { color: #333; }
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th { background-color: #007BFF; color: white; }
+    #status { margin-top: 15px; color: red; }
+  </style>
+</head>
+<body>
+  <h2>🔐 Access Your Payment History</h2>
+  <input type="email" id="email" placeholder="Enter your email" required />
+  <button onclick="fetchData()">🔍 View History</button>
+  <div id="status"></div>
+  <div id="table"></div>
+
+  <script>
+    function fetchData() {
+      const email = document.getElementById("email").value.trim();
+      document.getElementById("status").innerText = "Loading...";
+      document.getElementById("table").innerHTML = "";
+
+      if (!email) {
+        document.getElementById("status").innerText = "Please enter a valid email.";
+        return;
+      }
+
+      fetch("https://script.google.com/macros/s/AKfycbzTp5xVoNv_XFZHln0s9YpCp9vX1buhh89Q0zCV5lYOWUDFiM9_kNe74EDy97x9mAFNIQ/exec", {
+        method: "POST",
+        body: JSON.stringify({ action: "getPaymentHistory", identifier: email }),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data) || data.length === 0) {
+          document.getElementById("status").innerText = "No history found or access denied.";
+          return;
+        }
+
+        document.getElementById("status").innerText = "";
+        const header = Object.keys(data[0]);
+        let html = "<table><tr>" + header.map(h => `<th>${h}</th>`).join('') + "</tr>";
+        data.forEach(row => {
+          html += "<tr>" + header.map(h => `<td>${row[h]}</td>`).join('') + "</tr>";
+        });
+        html += "</table>";
+        document.getElementById("table").innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById("status").innerText = "Error loading data.";
+        console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
