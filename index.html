@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Client Portal - Payment History</title>
+  <title>Client Portal</title>
   <style>
-    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-    h2 { color: #333; }
+    body { font-family: Arial; padding: 20px; background: #f0f0f0; }
     input, button {
       padding: 10px;
       margin: 10px 0;
@@ -14,17 +12,8 @@
       max-width: 400px;
       box-sizing: border-box;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     th { background-color: #007BFF; color: white; }
     #status { margin-top: 15px; color: red; }
   </style>
@@ -32,7 +21,7 @@
 <body>
   <h2>🔐 Access Your Payment History</h2>
   <input type="email" id="email" placeholder="Enter your email" required />
-  <button onclick="fetchData()">🔍 View History</button>
+  <button onclick="fetchData()">View History</button>
   <div id="status"></div>
   <div id="table"></div>
 
@@ -49,13 +38,13 @@
 
       fetch("https://script.google.com/macros/s/AKfycbzTp5xVoNv_XFZHln0s9YpCp9vX1buhh89Q0zCV5lYOWUDFiM9_kNe74EDy97x9mAFNIQ/exec", {
         method: "POST",
-        body: JSON.stringify({ action: "getPaymentHistory", identifier: email }),
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
+        body: JSON.stringify({ action: "getPaymentHistory", identifier: email })
       })
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data) || data.length === 0) {
-          document.getElementById("status").innerText = "No history found or access denied.";
+          document.getElementById("status").innerText = "No data found for this email.";
           return;
         }
 
@@ -69,8 +58,8 @@
         document.getElementById("table").innerHTML = html;
       })
       .catch(err => {
+        console.error("❌ Error:", err);
         document.getElementById("status").innerText = "Error loading data.";
-        console.error(err);
       });
     }
   </script>
