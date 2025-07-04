@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Client Portal</title>
+  <title>Client Portal - Payment History</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
@@ -22,7 +22,7 @@
 
   <script>
     const { createClient } = supabase;
-const supa = createClient("https://xyz123.supabase.co","eyJhbG...YOUR_KEY...AbC123");
+const supabase = createClient("https://pzyhckwqnqgwylflshlf.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6eWhja3dxbnFnd3lsZmxzaGxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2MDM2MjQsImV4cCI6MjA2NzE3OTYyNH0.ifLVpuz3LEWOpooivchpKPdOYvP1iMAredAcf2e3z6I");
 
 
 
@@ -36,7 +36,7 @@ const supa = createClient("https://xyz123.supabase.co","eyJhbG...YOUR_KEY...AbC1
         return;
       }
 
-      const { data, error } = await supa
+      const { data, error } = await supabase
         .from("customer_data")
         .select("*")
         .eq("Email", email); // Column must match Supabase column exactly
