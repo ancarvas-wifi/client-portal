@@ -21,7 +21,10 @@
   <div id="table"></div>
 
   <script>
-    const supabase = supabase.createClient("Yhttps://xyz123.supabase.co", "eyJhbG...YOUR_KEY...AbC123");
+    const { createClient } = supabase;
+const supa = createClient("https://xyz123.supabase.co","eyJhbG...YOUR_KEY...AbC123");
+
+
 
     async function fetchData() {
       const email = document.getElementById("email").value.trim();
@@ -33,7 +36,7 @@
         return;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await supa
         .from("customer_data")
         .select("*")
         .eq("Email", email); // Column must match Supabase column exactly
