@@ -2,16 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Client Portal</title>
+  <title>Client Portal - Payment History</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
-    body { font-family: Arial; padding: 20px; background: #f0f0f0; }
-    input, button {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      max-width: 400px;
-      box-sizing: border-box;
-    }
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+    input, button { padding: 10px; width: 100%; max-width: 400px; margin-top: 10px; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     th { background-color: #007BFF; color: white; }
@@ -26,7 +21,9 @@
   <div id="table"></div>
 
   <script>
-    function fetchData() {
+    const supabase = supabase.createClient("Yhttps://xyz123.supabase.co", "eyJhbG...YOUR_KEY...AbC123");
+
+    async function fetchData() {
       const email = document.getElementById("email").value.trim();
       document.getElementById("status").innerText = "Loading...";
       document.getElementById("table").innerHTML = "";
@@ -36,31 +33,30 @@
         return;
       }
 
-      fetch("https://script.google.com/macros/s/AKfycbzTp5xVoNv_XFZHln0s9YpCp9vX1buhh89Q0zCV5lYOWUDFiM9_kNe74EDy97x9mAFNIQ/exec", {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=UTF-8" },
-        body: JSON.stringify({ action: "getPaymentHistory", identifier: email })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (!Array.isArray(data) || data.length === 0) {
-          document.getElementById("status").innerText = "No data found for this email.";
-          return;
-        }
+      const { data, error } = await supabase
+        .from("customer_data")
+        .select("*")
+        .eq("Email", email); // Column must match Supabase column exactly
 
-        document.getElementById("status").innerText = "";
-        const header = Object.keys(data[0]);
-        let html = "<table><tr>" + header.map(h => `<th>${h}</th>`).join('') + "</tr>";
-        data.forEach(row => {
-          html += "<tr>" + header.map(h => `<td>${row[h]}</td>`).join('') + "</tr>";
-        });
-        html += "</table>";
-        document.getElementById("table").innerHTML = html;
-      })
-      .catch(err => {
-        console.error("❌ Error:", err);
+      if (error) {
+        console.error(error);
         document.getElementById("status").innerText = "Error loading data.";
+        return;
+      }
+
+      if (!data.length) {
+        document.getElementById("status").innerText = "No records found.";
+        return;
+      }
+
+      document.getElementById("status").innerText = "";
+      const header = Object.keys(data[0]);
+      let html = "<table><tr>" + header.map(h => `<th>${h}</th>`).join("") + "</tr>";
+      data.forEach(row => {
+        html += "<tr>" + header.map(h => `<td>${row[h]}</td>`).join("") + "</tr>";
       });
+      html += "</table>";
+      document.getElementById("table").innerHTML = html;
     }
   </script>
 </body>
