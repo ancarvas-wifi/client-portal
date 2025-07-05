@@ -39,7 +39,7 @@ const supabase = createClient("https://pzyhckwqnqgwylflshlf.supabase.co","eyJhbG
       const { data, error } = await supabase
         .from("customer_data")
         .select("*")
-        .eq("Email", davidcjohnson031@gmail.com); // Column must match Supabase column exactly
+        .eq("Email", email); // Column must match Supabase column exactly
 
       if (error) {
         console.error(error);
