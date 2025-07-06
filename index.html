@@ -1,44 +1,67 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script>
-  const { createClient } = supabase;
-  const supabase = createClient(
-    "https://pzyhckwqnqgwy1flshlf.supabase.co", 
-    "https://pzyhckwqnqgwylflshlf.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6eWhja3dxbnFnd3lsZmxzaGxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2MDM2MjQsImV4cCI6MjA2NzE3OTYyNH0.ifLVpuz3LEWOpooivchpKPdOYvP1iMAredAcf2e3z6I"
-  );
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Client Portal - Payment History</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+    input, button { padding: 10px; width: 100%; max-width: 400px; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #007BFF; color: white; }
+    #status { margin-top: 15px; color: red; }
+  </style>
+</head>
+<body>
+  <h2>🔐 Access Your Payment History</h2>
+  <input type="email" id="email" placeholder="Enter your email" required />
+  <button onclick="fetchData()">View History</button>
+  <div id="status"></div>
+  <div id="table"></div>
 
-  async function fetchData() {
-    const email = document.getElementById("email").value.trim();
-    document.getElementById("status").innerText = "Loading...";
-    document.getElementById("table").innerHTML = "";
+  <script>
+    const { createClient } = supabase;
+    const supa = createClient(
+      "https://pzyhckwqnqgwy1flshlf.supabase.co", 
+      "https://pzyhckwqnqgwylflshlf.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6eWhja3dxbnFnd3lsZmxzaGxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2MDM2MjQsImV4cCI6MjA2NzE3OTYyNH0.ifLVpuz3LEWOpooivchpKPdOYvP1iMAredAcf2e3z6I"
+    );
 
-    if (!email) {
-      document.getElementById("status").innerText = "Please enter a valid email.";
-      return;
+    async function fetchData() {
+      const email = document.getElementById("email").value.trim();
+      document.getElementById("status").innerText = "Loading...";
+      document.getElementById("table").innerHTML = "";
+
+      if (!email) {
+        document.getElementById("status").innerText = "Please enter a valid email.";
+        return;
+      }
+
+      const { data, error } = await supa
+        .from("customer_data")
+        .select("*")
+        .eq("Email", email);
+
+      if (error) {
+        console.error(error);
+        document.getElementById("status").innerText = "Error loading data.";
+        return;
+      }
+
+      if (!data.length) {
+        document.getElementById("status").innerText = "No records found.";
+        return;
+      }
+
+      document.getElementById("status").innerText = "";
+      const header = Object.keys(data[0]);
+      let html = "<table><tr>" + header.map(h => `<th>${h}</th>`).join("") + "</tr>";
+      data.forEach(row => {
+        html += "<tr>" + header.map(h => `<td>${row[h] || ""}</td>`).join("") + "</tr>";
+      });
+      html += "</table>";
+      document.getElementById("table").innerHTML = html;
     }
-
-    const { data, error } = await supa
-      .from("customer_data")
-      .select("*")
-      .eq("Email", email);
-
-    if (error) {
-      console.error(error);
-      document.getElementById("status").innerText = "Error loading data.";
-      return;
-    }
-
-    if (!data.length) {
-      document.getElementById("status").innerText = "No records found.";
-      return;
-    }
-
-    document.getElementById("status").innerText = "";
-    const header = Object.keys(data[0]);
-    let html = "<table><tr>" + header.map(h => `<th>${h}</th>`).join("") + "</tr>";
-    data.forEach(row => {
-      html += "<tr>" + header.map(h => `<td>${row[h] || ""}</td>`).join("") + "</tr>";
-    });
-    html += "</table>";
-    document.getElementById("table").innerHTML = html;
-  }
-</script>
+  </script>
+</body>
+</html>
